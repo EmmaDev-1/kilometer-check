@@ -10,17 +10,21 @@ La app consulta el kilometraje de la unidad **Buick Skylark Convertible** (ID `7
 
 ## 🚀 Instrucciones rápidas
 
-Requiere **Flutter 3.41.2**.
+**Requisito:** Flutter **3.41.2** (versión pedida en el ejercicio).
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-Si usas [fvm](https://fvm.app) (el repo incluye `.fvmrc` apuntando a `3.41.2`):
+Eso es todo — la app arranca en el splash y pasa a la pantalla de consulta de kilometraje. No requiere configuración adicional (el token de prueba de Wialon ya viene incluido, ver nota abajo).
+
+### Si no tienes Flutter 3.41.2 instalado
+
+Usa [fvm](https://fvm.app) para no afectar tu instalación global de Flutter (el repo ya incluye `.fvmrc` apuntando a `3.41.2`):
 
 ```bash
-fvm install        # solo la primera vez
+fvm install         # descarga la 3.41.2 (solo la primera vez)
 fvm flutter pub get
 fvm flutter run
 ```
@@ -33,6 +37,8 @@ fvm flutter run
 ### Correr los tests
 
 ```bash
+flutter test
+# o, con fvm:
 fvm flutter test
 ```
 
@@ -57,20 +63,24 @@ Clean Architecture por feature + gestión de estado con **Provider** (`ChangeNot
 ```
 lib/
 ├── main.dart                  # Composición de dependencias (DI) con provider
-├── app/                       # Raíz de la app + Go Router (splash → home)
+├── app/                       # Raíz de la app (KilometerCheckApp) + Go Router (splash → home)
 ├── core/
 │   ├── constants/             # Constantes de Wialon
 │   ├── errors/                # Jerarquía sellada de AppException
 │   ├── theme/                 # Paleta iTire, tema Material 3, curvas de animación
 │   ├── utils/                 # Assets centralizados, tipografía, formatters
-│   └── widgets/               # AppScaffold, AppText, AppImage, AppTextField,
-│                              # AppButton, Gap, Spacing, Entrance (barrel: widgets.dart)
+│   └── widgets/               # AppScaffold, AppText, AppImage, AppTextField, AppButton,
+│                              # AnimatedBackgroundButton, Gap, Spacing, Entrance,
+│                              # CirclesAnimationBackground (barrel: widgets.dart)
 └── features/
     ├── splash/                # Splash animado (CustomPainter)
     └── mileage/
         ├── data/              # WialonRemoteDatasource, MileageModel, repo impl
         ├── domain/            # Entidad, contrato de repositorio, caso de uso
         └── presentation/      # MileageProvider + pantalla y widgets animados
+
+tool/
+└── gen_app_icon.dart          # Genera ícono de app y splash nativo desde assets/icons/icon.png
 ```
 
 **Flujo de dependencias:** `http.Client → WialonRemoteDatasource → MileageRepository → GetCurrentMileage → MileageProvider → UI`. Cada capa solo conoce el contrato de la anterior, lo que permite sustituirlas en pruebas (ver `test/`).
@@ -80,11 +90,25 @@ lib/
 ## ✨ UX / UI
 
 - Tema oscuro con la paleta de iTire (azul `#005CA8`, amarillo `#ECB806`) y tipografías Red Hat Display / Inter / JetBrains Mono.
-- **Splash** con llanta dibujada por fases (`CustomPainter`) y transición fade+scale hacia la pantalla principal (Go Router `CustomTransitionPage`).
-- **Odómetro animado**: el valor "rueda" desde la lectura anterior hasta la nueva, con halo azul que pulsa al actualizar.
+- **Splash personalizado** con llanta dibujada por fases (`CustomPainter`) y transición fade+scale hacia la pantalla principal (Go Router `CustomTransitionPage`).
+- **Odómetro animado**: el valor "rueda" desde la lectura anterior hasta la nueva; un halo de círculos azul/amarillo orbita detrás de la tarjeta sólida, asomando por sus orillas.
 - **Leyenda de tendencia** (petición EXTRA): informa si el kilometraje aumentó (+Δ km) o se mantuvo constante.
 - Indicador de carga en el botón (bloquea doble tap), feedback del estado de la llamada (hora de última actualización) y manejo de errores con mensajes accionables.
 - Entradas escalonadas de contenido y micro-animaciones en botones e indicador "En vivo".
+
+### 🎨 Ícono, splash nativo y nombre de la app
+
+La app tiene su propio ícono de launcher (Android/iOS/Web), reemplaza el splash nativo de Flutter (el logo que aparece antes del splash personalizado) por el logo de iTire sobre fondo oscuro de marca, y se muestra como **"iTire Kilometraje"** en el dispositivo.
+
+Todo se genera con `flutter_launcher_icons` + `flutter_native_splash` a partir de un único archivo fuente: `assets/icons/icon.png`. Si ese archivo cambia, regenera los assets con:
+
+```bash
+fvm dart run tool/gen_app_icon.dart   # convierte el origen a los PNG necesarios
+fvm dart run flutter_launcher_icons   # ícono de la app
+fvm dart run flutter_native_splash:create   # splash nativo
+```
+
+> Este cambio solo se ve al **reinstalar la app** (no aplica con hot reload).
 
 ---
 
