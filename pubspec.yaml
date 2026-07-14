@@ -63,10 +63,12 @@ flutter_launcher_icons:
 
 # Splash nativo (reemplaza el logo de Flutter que se ve antes del splash
 # personalizado). Fondo oscuro de la marca para una transición sin saltos.
+# Usa una imagen propia (más chica que el ícono adaptativo) para que el
+# logo no se vea sobredimensionado en el splash.
 flutter_native_splash:
   color: "#0A0A0A"
-  image: "assets/icons/app_icon_foreground.png"
+  image: "assets/icons/splash_icon.png"
   android_12:
-    image: "assets/icons/app_icon_foreground.png"
+    image: "assets/icons/splash_icon.png"
     color: "#0A0A0A"
   web: false
