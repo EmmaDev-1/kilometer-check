@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kilometer-check-web",
+      "runtimeExecutable": "fvm",
+      "runtimeArgs": ["flutter", "run", "-d", "web-server", "--web-port", "8090"],
+      "port": 8090
+    },
+    {
+      "name": "kilometer-check-web-proxy",
+      "runtimeExecutable": "fvm",
+      "runtimeArgs": [
+        "flutter", "run", "-d", "web-server", "--web-port", "8092",
+        "--dart-define=WIALON_BASE_URL=http://localhost:8091/wialon/ajax.html"
+      ],
+      "port": 8092
+    }
+  ]
+}
