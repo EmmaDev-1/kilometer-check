@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "Wialon - Kilometraje (iTire)",
+    "description": "Flujo de 2 llamadas para obtener el kilometraje del vehículo 'Buick Skylark Convertible' (id 734455) desde la API remota de Wialon.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://hst-api.wialon.com/wialon/ajax.html"
+    },
+    {
+      "key": "token",
+      "value": "5dce19710a5e26ab8b7b8986cb3c49e58C291791B7F0A7AEB8AFBFCEED7DC03BC48FF5F8"
+    },
+    {
+      "key": "unitId",
+      "value": "734455"
+    },
+    {
+      "key": "sid",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Login (token/login)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.eid) {",
+              "    pm.collectionVariables.set('sid', json.eid);",
+              "    console.log('Sesión guardada:', json.eid);",
+              "} else {",
+              "    console.error('Error de login:', json);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}?svc=token/login&params={\"token\":\"{{token}}\"}",
+          "host": ["{{baseUrl}}"],
+          "query": [
+            { "key": "svc", "value": "token/login" },
+            { "key": "params", "value": "{\"token\":\"{{token}}\"}" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Consultar kilometraje (core/search_item)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}?svc=core/search_item&params={\"id\":{{unitId}},\"flags\":8193}&sid={{sid}}",
+          "host": ["{{baseUrl}}"],
+          "query": [
+            { "key": "svc", "value": "core/search_item" },
+            { "key": "params", "value": "{\"id\":{{unitId}},\"flags\":8193}" },
+            { "key": "sid", "value": "{{sid}}" }
+          ]
+        }
+      }
+    }
+  ]
+}
